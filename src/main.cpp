@@ -17,9 +17,13 @@ int main() {
     }
     file.close();
 
-    std::string url = "http://api.openweathermap.org/data/2.5/weather?q=London&appid=" + apiKey;
-    cpr::Response getWeatherData = cpr::Get(cpr::Url{url});    
-    std::cout << getWeatherData.status_code << std::endl;
-    std::cout << getWeatherData.text << std::endl;
+    std::string url = "http://api.openweathermap.org/data/2.5/weather?q=London&appid=" + apiKey + "&units=metric";
+    cpr::Response getWeatherData = cpr::Get(cpr::Url{url});
+    nlohmann::json jsonData = nlohmann::json::parse(getWeatherData.text);
+    std::cout << "City: " << jsonData["name"].get<std::string>() << std::endl;
+    std::cout << "Temperature: " << jsonData["main"]["temp"].get<double>() << "°C" << std::endl;
+    std::cout << "Description: " << jsonData["weather"][0]["description"].get<std::string>() << std::endl;
+    std::cout << "Humidity: " << jsonData["main"]["humidity"].get<int>() << "%" << std::endl;
+    std::cout << "Wind Speed: " << jsonData["wind"]["speed"].get<double>() << " m/s" << std::endl;
     return 0;
 }
