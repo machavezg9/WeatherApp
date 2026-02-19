@@ -8,6 +8,7 @@ int main() {
     std::ifstream file("../.env");
     std::string line;
     std::string apiKey;
+    std::string city;
 
     while (std::getline(file, line))
     {
@@ -17,8 +18,18 @@ int main() {
     }
     file.close();
 
-    std::string url = "http://api.openweathermap.org/data/2.5/weather?q=London&appid=" + apiKey + "&units=metric";
-    cpr::Response getWeatherData = cpr::Get(cpr::Url{url});
+    std::cout << "Enter city name: ";
+    std::getline(std::cin, city);
+
+    std::string url = "http://api.openweathermap.org/data/2.5/weather";
+    cpr::Response getWeatherData = cpr::Get(
+        cpr::Url{url},
+        cpr::Parameters{
+            {"q", city}, 
+            {"appid", apiKey}, 
+            {"units", "metric"}}
+    );
+
     nlohmann::json jsonData = nlohmann::json::parse(getWeatherData.text);
     std::cout << "City: " << jsonData["name"].get<std::string>() << std::endl;
     std::cout << "Temperature: " << jsonData["main"]["temp"].get<double>() << "°C" << std::endl;
